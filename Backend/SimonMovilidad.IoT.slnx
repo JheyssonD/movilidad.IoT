@@ -1,2 +1,10 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SimonMovilidad.IoT.API/SimonMovilidad.IoT.API.csproj" />
+    <Project Path="src/SimonMovilidad.IoT.Core/SimonMovilidad.IoT.Core.csproj" />
+    <Project Path="src/SimonMovilidad.IoT.Infrastructure/SimonMovilidad.IoT.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SimonMovilidad.IoT.Tests/SimonMovilidad.IoT.Tests.csproj" />
+  </Folder>
 </Solution>
