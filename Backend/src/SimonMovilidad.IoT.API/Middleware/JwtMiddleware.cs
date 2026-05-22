@@ -26,7 +26,7 @@ namespace SimonMovilidad.IoT.API.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = ExtractToken(context);
 
             if (token != null)
             {
@@ -34,6 +34,26 @@ namespace SimonMovilidad.IoT.API.Middleware
             }
 
             await _next(context);
+        }
+
+        /// <summary>
+        /// REST usa Authorization: Bearer; SignalR envía el JWT en ?access_token= (accessTokenFactory).
+        /// </summary>
+        private static string? ExtractToken(HttpContext context)
+        {
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                return authHeader["Bearer ".Length..].Trim();
+            }
+
+            if (context.Request.Query.TryGetValue("access_token", out var queryToken)
+                && !string.IsNullOrWhiteSpace(queryToken))
+            {
+                return queryToken.ToString();
+            }
+
+            return null;
         }
 
         private void AttachUserToContext(HttpContext context, string token)

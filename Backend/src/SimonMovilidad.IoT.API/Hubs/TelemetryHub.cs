@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using SimonMovilidad.IoT.Core.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace SimonMovilidad.IoT.API.Hubs
@@ -18,13 +19,21 @@ namespace SimonMovilidad.IoT.API.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            // Join groups based on roles or claims if authenticated
-            var role = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-            if (role == "Admin")
+            var role = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                ?? Context.User?.FindFirst("role")?.Value;
+
+            if (string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, "Admin");
             }
+
             await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "Admin");
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Avenida Santander",
+        "city": "Cartagena",
+        "source": "OpenStreetMap",
+        "license": "ODbL"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-75.55600, 10.41800],
+          [-75.55450, 10.42050],
+          [-75.55300, 10.42300],
+          [-75.55150, 10.42550],
+          [-75.55000, 10.42800],
+          [-75.54850, 10.43050],
+          [-75.54700, 10.43300],
+          [-75.54550, 10.43550],
+          [-75.54400, 10.43800],
+          [-75.54250, 10.44050]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+}
+@media (max-width: 1024px) {
+  :host {
+    width: 100%;
+    height: auto;
+  }
+}
+
+
+/* ─── Sidebar: Fleet List ────────────────────────────── */
+.sidebar {
+  width: 300px;
+  min-width: 260px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.sidebar-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sidebar-header h3 i {
+  color: var(--color-primary);
+  margin-right: 6px;
+}
+
+.vehicle-count {
+  background-color: var(--bg-tertiary);
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+}
+
+.vehicle-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── Vehicle Cards ──────────────────────────────────── */
+.vehicle-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.vehicle-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  background-color: rgba(31, 41, 55, 0.4);
+}
+
+.active-card {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary-glow) !important;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.vehicle-id {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.vehicle-id i {
+  color: var(--color-primary);
+  margin-right: 4px;
+}
+
+.alert-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  background-color: var(--color-danger);
+  border-radius: 50%;
+  animation: alert-pulse 1.5s infinite;
+}
+
+.card-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  min-width: 0;
+}
+
+.metric .label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.metric .value {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.empty-list {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 40px 10px;
+}
+
+/* Glow animations for alerts */
+@keyframes alert-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* ─── RESPONSIVE: Tablet (≤ 1024px) ─────────────────── */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    max-height: 180px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .vehicle-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .vehicle-card {
+    min-width: 180px;
+    max-width: 200px;
+    flex-shrink: 0;
+  }
+}
+
+/* ─── RESPONSIVE: Mobile (≤ 640px) ──────────────────── */
+@media (max-width: 640px) {
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+
+  :host.mobile-hidden {
+    display: none !important;
+  }
+
+  .sidebar {
+    height: 100%;
+    max-height: none;
+    border-bottom: none;
+  }
+
+  .vehicle-list {
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .vehicle-card {
+    min-width: unset;
+    max-width: none;
+    width: 100%;
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Avenida Calle 72 oriente",
+        "city": "Bogotá",
+        "source": "OpenStreetMap",
+        "license": "ODbL"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.0587007, 4.6572758],
+          [-74.0603627, 4.6584130],
+          [-74.0621289, 4.6596124],
+          [-74.0638447, 4.6608350],
+          [-74.0657331, 4.6621473],
+          [-74.0671239, 4.6631172],
+          [-74.0685683, 4.6642007],
+          [-74.0700240, 4.6653015]
+        ]
+      }
+    }
+  ]
+}

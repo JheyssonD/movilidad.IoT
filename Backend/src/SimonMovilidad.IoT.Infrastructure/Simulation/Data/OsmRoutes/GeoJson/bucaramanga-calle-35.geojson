@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Calle 35",
+        "city": "Bucaramanga",
+        "source": "OpenStreetMap",
+        "license": "ODbL"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-73.12800, 7.11200],
+          [-73.12650, 7.11400],
+          [-73.12500, 7.11600],
+          [-73.12350, 7.11800],
+          [-73.12200, 7.12000],
+          [-73.12050, 7.12200],
+          [-73.11900, 7.12400],
+          [-73.11750, 7.12600],
+          [-73.11600, 7.12800],
+          [-73.11450, 7.13000]
+        ]
+      }
+    }
+  ]
+}

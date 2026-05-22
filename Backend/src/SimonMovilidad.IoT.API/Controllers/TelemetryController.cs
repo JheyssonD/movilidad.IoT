@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using SimonMovilidad.IoT.API.Hubs;
 using SimonMovilidad.IoT.Core.Models;
 using SimonMovilidad.IoT.Core.Services;
 using SimonMovilidad.IoT.Infrastructure.Persistence;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimonMovilidad.IoT.API.Controllers
 {
@@ -19,8 +17,8 @@ namespace SimonMovilidad.IoT.API.Controllers
         private readonly IHubContext<TelemetryHub> _hubContext;
 
         public TelemetryController(
-            ApplicationDbContext context, 
-            IPredictionService predictionService, 
+            ApplicationDbContext context,
+            IPredictionService predictionService,
             IHubContext<TelemetryHub> hubContext)
         {
             _context = context;
@@ -35,34 +33,65 @@ namespace SimonMovilidad.IoT.API.Controllers
             _context.Telemetries.Add(telemetry);
             await _context.SaveChangesAsync();
 
-            // WebSockets live broadcast
             await _hubContext.Clients.All.SendAsync("ReceiveTelemetry", telemetry);
 
-            // Prediction alerting logic
+            var autonomy = _predictionService.CalculateAutonomyHours(telemetry);
             if (_predictionService.IsAlertTriggered(telemetry))
             {
-                await _hubContext.Clients.Group("Admin").SendAsync("ReceiveAlert", new 
-                { 
-                    VehicleId = telemetry.VehicleId, 
-                    Message = $"Alerta Combustible Crítico! Autonomía menor a 1 hora para vehículo {telemetry.VehicleId}.",
-                    Autonomy = _predictionService.CalculateAutonomyHours(telemetry)
+                await _hubContext.Clients.Group("Admin").SendAsync("ReceiveAlert", new
+                {
+                    vehicleId = telemetry.VehicleId,
+                    message = $"Alerta combustible crítico ({autonomy:F2} h autonomía) — {telemetry.VehicleId}.",
+                    autonomy
                 });
             }
 
             return Ok(new { success = true, telemetryId = telemetry.Id });
         }
 
-        [HttpGet("history")]
-        public IActionResult GetHistory()
+        [HttpGet("fleet")]
+        public async Task<IActionResult> GetFleet()
         {
             var role = HttpContext.Items["UserRole"] as string ?? "User";
-            var data = _context.Telemetries
-                .OrderByDescending(t => t.Timestamp)
-                .Take(50)
-                .ToList();
+            var vehicleIds = await _context.Telemetries.Select(t => t.VehicleId).Distinct().ToListAsync();
+            var latest = new List<Telemetry>();
+            foreach (var vid in vehicleIds)
+            {
+                var top = await _context.Telemetries
+                    .Where(t => t.VehicleId == vid)
+                    .OrderByDescending(t => t.Timestamp)
+                    .FirstOrDefaultAsync();
+                if (top != null) latest.Add(top);
+            }
 
-            // Mask IDs for regular standard users
-            var response = data.Select(t => new Telemetry
+            var fleet = latest.Select(t => new
+            {
+                vehicleId = _predictionService.MaskVehicleId(t.VehicleId, role),
+                latitude = t.Latitude,
+                longitude = t.Longitude,
+                fuelLevel = t.FuelLevel,
+                speed = t.Speed
+            });
+
+            return Ok(fleet);
+        }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistory()
+        {
+            var role = HttpContext.Items["UserRole"] as string ?? "User";
+            var vehicleIds = await _context.Telemetries.Select(t => t.VehicleId).Distinct().ToListAsync();
+            var data = new List<Telemetry>();
+            foreach (var vid in vehicleIds)
+            {
+                var top = await _context.Telemetries
+                    .Where(t => t.VehicleId == vid)
+                    .OrderByDescending(t => t.Timestamp)
+                    .FirstOrDefaultAsync();
+                if (top != null) data.Add(top);
+            }
+
+            var response = data.OrderBy(t => t.VehicleId).Select(t => new Telemetry
             {
                 Id = t.Id,
                 VehicleId = _predictionService.MaskVehicleId(t.VehicleId, role),

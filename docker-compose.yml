@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -8,21 +6,34 @@ services:
     ports:
       - "5100:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - JWT_SECRET=SuperSecretSimonMovilidadKey2026SecureStringWithMoreBytes
-      - SIGNALR_URL=http://localhost:5100/telemetryHub
-      - DB_PATH=/app/data/fleet.db
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      JWT_SECRET: SuperSecretSimonMovilidadKey2026SecureStringWithMoreBytes
+      CORS_ORIGINS: http://localhost:4220,http://localhost:4200
+      DB_PATH: /app/data/fleet.db
+      RESET_TELEMETRY_ON_START: "true"
+      ENABLE_SIMULATOR: "true"
+      API_BASE_URL: http://localhost:8080
     volumes:
       - db-data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 25s
 
   frontend:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
+      args:
+        API_BASE_URL: http://localhost:5100
     ports:
       - "4220:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   db-data:

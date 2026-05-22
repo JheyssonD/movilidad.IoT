@@ -33,3 +33,7 @@ out-tsc/
 
 # Docker
 .dockerignore
+
+# Playwright
+playwright-report/
+test-results/

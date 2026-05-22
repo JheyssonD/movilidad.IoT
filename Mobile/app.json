@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Simon Movilidad IoT",
+    "slug": "simon-movilidad-iot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "simonmovilidad",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0b0f1a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.simonmovilidad.iot",
+      "config": {
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0b0f1a"
+      },
+      "package": "com.simonmovilidad.iot",
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      },
+      "permissions": ["NOTIFICATIONS"]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#3b82f6"
+        }
+      ]
+    ]
+  }
+}

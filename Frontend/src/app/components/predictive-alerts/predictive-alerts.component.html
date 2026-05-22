@@ -1,0 +1,21 @@
+<div *ngIf="userRole === 'Admin'" class="alerts-panel">
+  <div class="panel-header">
+    <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Centro de Alertas Predictivas (Tiempo Real)</h3>
+    <span class="alert-badge" *ngIf="activeAlerts.length > 0">{{ activeAlerts.length }} activas</span>
+  </div>
+  <div class="alerts-list">
+    <div *ngFor="let alert of activeAlerts" class="alert-item glow-danger">
+      <i class="fa-solid fa-circle-exclamation text-danger alert-icon"></i>
+      <div class="alert-info">
+        <span class="alert-vehicle">{{ alert.vehicleId }}</span>
+        <span class="alert-message">{{ alert.message }}</span>
+        <span class="alert-time">{{ alert.timestamp | date:'HH:mm:ss' }}</span>
+      </div>
+    </div>
+    <div *ngIf="activeAlerts.length === 0" class="empty-alerts">
+      <i class="fa-solid fa-circle-check text-success"></i>
+      <p>No hay alertas críticas activas.</p>
+      <p class="empty-alerts-hint">Se listan vehículos con autonomía &lt; 1 h (combustible / consumo).</p>
+    </div>
+  </div>
+</div>

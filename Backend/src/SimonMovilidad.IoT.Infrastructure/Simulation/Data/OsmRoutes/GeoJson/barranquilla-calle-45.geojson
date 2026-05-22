@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Calle 45",
+        "city": "Barranquilla",
+        "source": "OpenStreetMap",
+        "license": "ODbL"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.80200, 10.95800],
+          [-74.80050, 10.96050],
+          [-74.79900, 10.96300],
+          [-74.79750, 10.96550],
+          [-74.79600, 10.96800],
+          [-74.79450, 10.97050],
+          [-74.79300, 10.97300],
+          [-74.79150, 10.97550],
+          [-74.79000, 10.97800],
+          [-74.78850, 10.98050]
+        ]
+      }
+    }
+  ]
+}

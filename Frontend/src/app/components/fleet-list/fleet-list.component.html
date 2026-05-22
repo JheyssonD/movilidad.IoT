@@ -1,0 +1,49 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h3><i class="fa-solid fa-list-check"></i> Estado de la Flota</h3>
+    <span class="vehicle-count">{{ vehiclesList.length }}</span>
+  </div>
+
+  <div class="vehicle-list">
+    <div
+      *ngFor="let vehicle of vehiclesList"
+      (click)="selectVehicle(vehicle.vehicleId)"
+      class="vehicle-card"
+      [ngClass]="{'active-card': vehicle.vehicleId === selectedVehicleId}">
+
+      <div class="card-header">
+        <span class="vehicle-id">
+          <i class="fa-solid fa-truck-pickup"></i> {{ vehicle.vehicleId }}
+        </span>
+        <span
+          *ngIf="isFuelCritical(vehicle)"
+          class="alert-dot"
+          title="¡Alerta Combustible Crítico!">
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="metric" *ngIf="vehicle.city">
+          <span class="label">Ciudad</span>
+          <span class="value">{{ vehicle.city }}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Velocidad</span>
+          <span class="value">
+            {{ vehicle.pending ? '—' : (vehicle.speed ?? 0).toFixed(1) + ' km/h' }}
+          </span>
+        </div>
+        <div class="metric">
+          <span class="label">Combustible</span>
+          <span class="value" [style.color]="isFuelCritical(vehicle) ? '#ef4444' : '#f9fafb'">
+            {{ vehicle.pending ? '—' : (vehicle.fuelLevel ?? 0).toFixed(1) + ' L' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="vehiclesList.length === 0" class="empty-list">
+      <i class="fa-solid fa-spinner fa-spin"></i> Espere, esperando telemetría de vehículos...
+    </div>
+  </div>
+</aside>

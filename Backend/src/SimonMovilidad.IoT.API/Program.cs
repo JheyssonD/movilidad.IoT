@@ -8,32 +8,52 @@ using SimonMovilidad.IoT.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Explicitly bind to port 5100 to avoid default occupied ports and ensure local matching config
-builder.WebHost.UseUrls("http://localhost:5100");
-
-// Add Database
-var dbPath = Environment.GetEnvironmentVariable("DB_PATH") ?? "fleet.db";
+var dbPath = Environment.GetEnvironmentVariable("DB_PATH") ?? "data/fleet.db";
+Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(dbPath))!);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
-// Add Services
 builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-// Register Simulator
-builder.Services.AddHostedService<TelemetrySimulator>();
+var simulatorEnabled = !string.Equals(
+    Environment.GetEnvironmentVariable("ENABLE_SIMULATOR"),
+    "false",
+    StringComparison.OrdinalIgnoreCase);
 
-builder.Services.AddControllers();
-builder.Services.AddSignalR();
+var apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ?? "http://localhost:5100";
+
+if (simulatorEnabled)
+{
+    builder.Services.AddHttpClient("IngestClient", client =>
+    {
+        client.BaseAddress = new Uri(apiBaseUrl);
+    });
+    builder.Services.AddHostedService<TelemetrySimulator>();
+}
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS Settings
+var corsOrigins = (builder.Configuration["CORS_ORIGINS"]
+    ?? "http://localhost:4220,http://localhost:4200,http://localhost:8082")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4220", "http://localhost:4200")
+        policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -42,28 +62,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Run migrations and seed data automatically
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreated();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAngular");
-
-// Register custom manual JWT parsing middleware
 app.UseMiddleware<JwtMiddleware>();
-
 app.MapControllers();
 app.MapHub<TelemetryHub>("/telemetryHub");
 
-// Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow }));
 
 app.Run();

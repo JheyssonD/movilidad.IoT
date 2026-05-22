@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AppConfigService } from '../../services/app-config.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,11 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private config: AppConfigService
+  ) {}
 
   onSubmit() {
     if (!this.email || !this.password) {
@@ -28,8 +33,7 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Using Port 5100 as requested by the user to avoid common occupied default ports
-    this.http.post<any>('http://localhost:5100/api/auth/login', {
+    this.http.post<any>(`${this.config.apiUrl}/api/auth/login`, {
       email: this.email,
       password: this.password
     }).subscribe({
