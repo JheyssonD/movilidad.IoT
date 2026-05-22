@@ -1,0 +1,161 @@
+<div class="dashboard-container">
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <div class="nav-logo">
+        <i class="fa-solid fa-truck-monster"></i>
+      </div>
+      <div class="nav-title">
+        <h1>Simon Movilidad</h1>
+        <p>Dashboard de Monitoreo IoT</p>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <!-- Network Connectivity Indicator -->
+      <div class="status-badge" [ngClass]="isOnline ? 'badge-online' : 'badge-offline'">
+        <i class="fa-solid" [ngClass]="isOnline ? 'fa-wifi' : 'fa-triangle-exclamation'"></i>
+        <span>{{ isOnline ? 'EN LÍNEA' : 'MODO OFFLINE' }}</span>
+      </div>
+
+      <!-- User Profile and Role -->
+      <div class="user-profile">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-gear"></i>
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ userEmail }}</span>
+          <span class="user-role" [ngClass]="userRole === 'Admin' ? 'role-admin' : 'role-user'">
+            {{ userRole === 'Admin' ? 'Administrador' : 'Operador Estándar' }}
+          </span>
+        </div>
+      </div>
+
+      <button (click)="logout()" class="btn-logout" title="Cerrar Sesión">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Panel Content Grid -->
+  <main class="main-content">
+    <!-- Sidebar: Fleet List -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3><i class="fa-solid fa-list-check"></i> Estado de la Flota</h3>
+        <span class="vehicle-count">{{ vehiclesList.length }}</span>
+      </div>
+
+      <div class="vehicle-list">
+        <div 
+          *ngFor="let vehicle of vehiclesList" 
+          (click)="selectVehicle(vehicle.vehicleId)" 
+          class="vehicle-card" 
+          [ngClass]="{'active-card': vehicle.vehicleId === selectedVehicleId}">
+          
+          <div class="card-header">
+            <span class="vehicle-id">
+              <i class="fa-solid fa-truck-pickup"></i> {{ vehicle.vehicleId }}
+            </span>
+            <!-- Alert Dot -->
+            <span 
+              *ngIf="vehicle.fuelLevel / vehicle.averageConsumptionPerHour < 1.0" 
+              class="alert-dot" 
+              title="¡Alerta Combustible Crítico!">
+            </span>
+          </div>
+
+          <div class="card-body">
+            <div class="metric">
+              <span class="label">Velocidad</span>
+              <span class="value">{{ vehicle.speed.toFixed(1) }} km/h</span>
+            </div>
+            <div class="metric">
+              <span class="label">Combustible</span>
+              <span class="value" [style.color]="(vehicle.fuelLevel / vehicle.averageConsumptionPerHour < 1.0) ? '#ef4444' : '#f9fafb'">
+                {{ vehicle.fuelLevel.toFixed(1) }} L
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="vehiclesList.length === 0" class="empty-list">
+          <i class="fa-solid fa-spinner fa-spin"></i> Espere, esperando telemetría de vehículos...
+        </div>
+      </div>
+    </aside>
+
+    <!-- Central Body Panel -->
+    <section class="center-panel">
+      <!-- Quick Stats Metrics -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue"><i class="fa-solid fa-network-wired"></i></div>
+          <div class="stat-details">
+            <h3>Monitoreados</h3>
+            <p class="stat-value">{{ vehiclesList.length }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-orange"><i class="fa-solid fa-gas-pump"></i></div>
+          <div class="stat-details">
+            <h3>Baja Autonomía</h3>
+            <p class="stat-value">{{ userRole === 'Admin' ? activeAlerts.length : 'N/A' }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-green"><i class="fa-solid fa-gauge-high"></i></div>
+          <div class="stat-details">
+            <h3>Promedio Flota</h3>
+            <p class="stat-value">62.4 <span style="font-size: 14px;">km/h</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map and Chart Grid -->
+      <div class="visualizer-grid">
+        <!-- Live Map Component -->
+        <div class="visualizer-card map-card">
+          <div class="card-title">
+            <h3><i class="fa-solid fa-earth-americas"></i> Mapa de Operación Realtime</h3>
+          </div>
+          <div class="card-content map-wrapper">
+            <app-map></app-map>
+          </div>
+        </div>
+
+        <!-- Historical Performance Chart -->
+        <div class="visualizer-card chart-card">
+          <div class="card-title">
+            <h3><i class="fa-solid fa-chart-line"></i> Histórico Reciente: {{ selectedVehicleId || 'Ninguno' }}</h3>
+          </div>
+          <div class="card-content chart-wrapper">
+            <canvas id="historyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Realtime Alerts Panel (Admin Only) -->
+      <div *ngIf="userRole === 'Admin'" class="alerts-panel">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Centro de Alertas Predictivas (Tiempo Real)</h3>
+          <span class="alert-badge" *ngIf="activeAlerts.length > 0">{{ activeAlerts.length }} activas</span>
+        </div>
+        <div class="alerts-list">
+          <div *ngFor="let alert of activeAlerts" class="alert-item glow-danger">
+            <i class="fa-solid fa-circle-exclamation text-danger alert-icon"></i>
+            <div class="alert-info">
+              <span class="alert-message">{{ alert.message }}</span>
+              <span class="alert-time">{{ alert.timestamp | date:'HH:mm:ss' }}</span>
+            </div>
+          </div>
+          <div *ngIf="activeAlerts.length === 0" class="empty-alerts">
+            <i class="fa-solid fa-circle-check text-success"></i> No hay alertas críticas registradas. Autonomía óptima.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

@@ -16,8 +16,8 @@ namespace SimonMovilidad.IoT.Infrastructure.Persistence
             
             // Seed default users for validation
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Email = "admin@simon.com", PasswordHash = "Admin123!", Role = "Admin" },
-                new User { Id = 2, Email = "user@simon.com", PasswordHash = "User123!", Role = "User" }
+                new User { Id = 1, Email = "admin@simon.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"), Role = "Admin" },
+                new User { Id = 2, Email = "user@simon.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("User123!"), Role = "User" }
             );
         }
     }

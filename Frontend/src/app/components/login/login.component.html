@@ -1,0 +1,49 @@
+<div class="login-wrapper">
+  <!-- Glowing decorative spheres for premium glassmorphism background -->
+  <div class="sphere sphere-primary"></div>
+  <div class="sphere sphere-secondary"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="brand-logo">
+        <i class="fa-solid fa-truck-monster"></i>
+      </div>
+      <h2>Simon Movilidad</h2>
+      <p>Sistema de Monitoreo IoT</p>
+    </div>
+
+    <form (submit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email"><i class="fa-solid fa-envelope"></i> Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="email" 
+          placeholder="admin@simon.com / user@simon.com" 
+          required 
+          autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="password" 
+          placeholder="Admin123! / User123!" 
+          required>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="btn-submit">
+        <span *ngIf="!isLoading">Ingresar <i class="fa-solid fa-arrow-right-to-bracket"></i></span>
+        <span *ngIf="isLoading"><i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...</span>
+      </button>
+    </form>
+  </div>
+</div>

@@ -14,7 +14,7 @@ export class SignalRService {
 
   public startConnection(token: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/telemetryHub', {
+      .withUrl('http://localhost:5100/telemetryHub', {
         accessTokenFactory: () => token
       })
       .withAutomaticReconnect()

@@ -11,7 +11,7 @@ La arquitectura del sistema sigue los principios de **Clean Architecture** y **S
 
 `
 SimonMovilidad.IoT/
-├── Backend/                    # ASP.NET Core 8 Web API
+├── Backend/                    # ASP.NET Core 10 Web API
 │   ├── src/
 │   │   ├── SimonMovilidad.IoT.API/             # Capa de API y SignalR Realtime Hubs
 │   │   ├── SimonMovilidad.IoT.Core/            # Capa de Dominio (Modelos e Interfaces)
@@ -37,14 +37,14 @@ SimonMovilidad.IoT/
 ## 🛠️ **Tecnologías Principales**
 
 ### **Backend/API**
-- **ASP.NET Core 8** (API REST robusta con middlewares personalizados)
+- **ASP.NET Core 10** (API REST robusta con middlewares personalizados)
 - **EF Core** y **SQLite** (Base de datos local rápida y portátil)
 - **SignalR** (Servicios de tiempo real bidireccionales con WebSockets)
 - **JWT** (Autenticación y enrutamiento basado en roles de usuario/administrador)
 - **xUnit** (Testing automatizado de encriptado, cálculo predictivo y enmascaramiento)
 
 ### **Frontend Web**
-- **Angular 18** (Framework SPA con RxJS para flujos reactivos)
+- **Angular 20** (Framework SPA con RxJS para flujos reactivos)
 - **Leaflet** (Mapas interactivos para visualización GPS en tiempo real)
 - **Chart.js** (Visualización interactiva de históricos de telemetría)
 - **Dexie.js / IndexedDB** (Estrategia offline y sincronización robusta)

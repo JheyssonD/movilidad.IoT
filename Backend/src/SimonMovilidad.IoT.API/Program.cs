@@ -8,6 +8,9 @@ using SimonMovilidad.IoT.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Explicitly bind to port 5100 to avoid default occupied ports and ensure local matching config
+builder.WebHost.UseUrls("http://localhost:5100");
+
 // Add Database
 var dbPath = Environment.GetEnvironmentVariable("DB_PATH") ?? "fleet.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -30,7 +33,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4220", "http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

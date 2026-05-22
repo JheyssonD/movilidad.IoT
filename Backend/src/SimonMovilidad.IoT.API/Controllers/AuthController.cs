@@ -26,8 +26,8 @@ namespace SimonMovilidad.IoT.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email && u.PasswordHash == request.Password);
-            if (user == null)
+            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return Unauthorized(new { message = "Credenciales incorrectas" });
             }
@@ -39,7 +39,12 @@ namespace SimonMovilidad.IoT.API.Controllers
         private string GenerateJwtToken(SimonMovilidad.IoT.Core.Models.User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT_SECRET"] ?? "SuperSecretSimonMovilidadKey2026SecureStringWithMoreBytes");
+            var secret = _configuration["JWT_SECRET"];
+            if (string.IsNullOrWhiteSpace(secret))
+            {
+                throw new Exception("JWT secret is missing from configuration");
+            }
+            var key = Encoding.UTF8.GetBytes(secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] 
@@ -48,6 +53,8 @@ namespace SimonMovilidad.IoT.API.Controllers
                     new Claim("role", user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
+                Issuer = "SimonMovilidad",
+                Audience = "SimonMovilidadUsers",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
